@@ -79,8 +79,11 @@
                         <!-- Route Actions -->
                         <div class="mb-3">
                             <button type="button" class="btn btn-outline-primary w-100" id="calculate-route">
-                                <i class="bi bi-map"></i> Recalculate Route & Mileage
+                                <i class="bi bi-map"></i> <span id="route-btn-text">Recalculate Route & Mileage</span>
                             </button>
+                            <small class="form-text text-muted text-center d-block mt-1">
+                                <i class="bi bi-info-circle"></i> Route recalculates automatically when addresses change
+                            </small>
                         </div>
 
                         <!-- Mileage -->
@@ -302,6 +305,9 @@ function setupAutocomplete() {
         if (place.geometry) {
             document.getElementById('start_latitude').value = place.geometry.location.lat();
             document.getElementById('start_longitude').value = place.geometry.location.lng();
+            
+            // Auto-calculate route if both locations are present
+            checkAndAutoCalculateRoute();
         }
     });
 
@@ -310,12 +316,24 @@ function setupAutocomplete() {
         if (place.geometry) {
             document.getElementById('end_latitude').value = place.geometry.location.lat();
             document.getElementById('end_longitude').value = place.geometry.location.lng();
+            
+            // Auto-calculate route if both locations are present
+            checkAndAutoCalculateRoute();
         }
     });
 }
 
 function setupEventListeners() {
     document.getElementById('calculate-route').addEventListener('click', calculateRoute);
+    
+    // Add listeners for manual address entry (not just autocomplete)
+    document.getElementById('start_location').addEventListener('blur', function() {
+        setTimeout(checkAndAutoCalculateRoute, 500); // Small delay to allow autocomplete
+    });
+    
+    document.getElementById('end_location').addEventListener('blur', function() {
+        setTimeout(checkAndAutoCalculateRoute, 500); // Small delay to allow autocomplete
+    });
     
     directionsRenderer.addListener('directions_changed', function() {
         const directions = directionsRenderer.getDirections();
@@ -366,6 +384,64 @@ function updateRouteInfo(route) {
     const mileage = parseFloat(distance.replace(/[^\d.]/g, ''));
     if (mileage) {
         document.getElementById('mileage').value = mileage.toFixed(1);
+        
+        // Show success feedback
+        updateRouteButtonState('success', 'Route Updated');
+        
+        // Flash the mileage field to draw attention
+        const mileageField = document.getElementById('mileage');
+        mileageField.classList.add('bg-success', 'bg-opacity-25');
+        setTimeout(() => {
+            mileageField.classList.remove('bg-success', 'bg-opacity-25');
+        }, 2000);
+    }
+}
+
+// Auto-calculation functions
+function checkAndAutoCalculateRoute() {
+    const start = document.getElementById('start_location').value.trim();
+    const end = document.getElementById('end_location').value.trim();
+    
+    if (start && end && start.length > 5 && end.length > 5) {
+        console.log('Both addresses present, auto-calculating route...');
+        updateRouteButtonState('calculating', 'Calculating Route...');
+        calculateRoute();
+    }
+}
+
+function updateRouteButtonState(state, text) {
+    const btn = document.getElementById('calculate-route');
+    const btnText = document.getElementById('route-btn-text');
+    
+    // Reset classes
+    btn.className = 'btn w-100';
+    
+    switch (state) {
+        case 'calculating':
+            btn.classList.add('btn-warning');
+            btn.disabled = true;
+            btnText.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + text;
+            break;
+        case 'success':
+            btn.classList.add('btn-success');
+            btn.disabled = false;
+            btnText.innerHTML = '<i class="bi bi-check-circle me-2"></i>' + text;
+            // Reset to normal after 3 seconds
+            setTimeout(() => {
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-primary');
+                btnText.innerHTML = '<i class="bi bi-map"></i> Recalculate Route';
+            }, 3000);
+            break;
+        case 'error':
+            btn.classList.add('btn-outline-danger');
+            btn.disabled = false;
+            btnText.innerHTML = '<i class="bi bi-exclamation-triangle me-2"></i>' + text;
+            break;
+        default:
+            btn.classList.add('btn-outline-primary');
+            btn.disabled = false;
+            btnText.innerHTML = '<i class="bi bi-map"></i> Recalculate Route & Mileage';
     }
 }
 
