@@ -26,7 +26,8 @@ class TripController extends Controller
         $user = auth()->user();
         $query = $user->trips()->with('labels');
 
-        if ($request->has('search')) {
+        // Text search filter
+        if ($request->has('search') && $request->search) {
             $search = $request->get('search');
             $query->where(function($q) use ($search) {
                 $q->where('start_location', 'like', "%{$search}%")
@@ -36,11 +37,31 @@ class TripController extends Controller
             });
         }
 
+        // Date range filter
+        if ($request->has('start_date') && $request->start_date) {
+            $query->where('trip_date', '>=', $request->start_date);
+        }
+        
+        if ($request->has('end_date') && $request->end_date) {
+            $query->where('trip_date', '<=', $request->end_date);
+        }
+
+        // Tag filter
+        if ($request->has('tags') && is_array($request->tags) && !empty($request->tags)) {
+            $query->whereHas('labels', function($q) use ($request) {
+                $q->whereIn('name', $request->tags);
+            });
+        }
+
         $trips = $query->orderBy('trip_date', 'desc')
                       ->orderBy('trip_time', 'desc')
-                      ->paginate(20);
+                      ->paginate(20)
+                      ->appends($request->query());
 
-        return view('trips.index', compact('trips'));
+        // Get all user labels for filter dropdown
+        $userLabels = $user->labels()->orderBy('name')->get();
+
+        return view('trips.index', compact('trips', 'userLabels'));
     }
 
     /**

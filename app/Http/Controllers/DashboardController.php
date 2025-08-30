@@ -49,6 +49,7 @@ class DashboardController extends Controller
                 ->count(),
             'current_year_miles' => $user->trips()
                 ->whereYear('trip_date', $currentYear)
+
                 ->sum('mileage'),
             'current_month_miles' => $user->trips()
                 ->whereYear('trip_date', $currentYear)
@@ -79,3 +80,4 @@ class DashboardController extends Controller
         return MileageRate::getOrCreateForUserAndYear($user->id, $currentYear);
     }
 }
+

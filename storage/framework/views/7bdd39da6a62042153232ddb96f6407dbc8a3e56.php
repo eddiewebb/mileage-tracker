@@ -17,30 +17,101 @@
     <div class="row mb-4">
         <div class="col">
             <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-funnel"></i> Filter Trips
+                        <?php if(request()->hasAny(['search', 'start_date', 'end_date', 'tags'])): ?>
+                            <span class="badge bg-primary ms-2"><?php echo e(collect([request('search'), request('start_date'), request('end_date'), request('tags')])->filter()->count()); ?> filters applied</span>
+                        <?php endif; ?>
+                    </h6>
+                </div>
                 <div class="card-body">
-                    <form method="GET" action="<?php echo e(route('trips.index')); ?>" class="row g-3">
-                        <div class="col-md-8">
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                <input type="text" 
-                                       class="form-control" 
-                                       name="search" 
-                                       value="<?php echo e(request('search')); ?>" 
-                                       placeholder="Search trips by location, purpose, or notes...">
+                    <form method="GET" action="<?php echo e(route('trips.index')); ?>" id="filters-form">
+                        <!-- Text Search -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="search" class="form-label">Search Text</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="search"
+                                           name="search" 
+                                           value="<?php echo e(request('search')); ?>" 
+                                           placeholder="Search by location, purpose, or notes...">
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="row">
-                                <div class="col-6">
-                                    <button type="submit" class="btn btn-outline-primary w-100">
-                                        <i class="bi bi-search"></i> <span class="d-none d-sm-inline">Search</span>
-                                    </button>
+
+                        <!-- Date Range -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="start_date" class="form-label">Start Date</label>
+                                <input type="date" 
+                                       class="form-control" 
+                                       id="start_date"
+                                       name="start_date" 
+                                       value="<?php echo e(request('start_date')); ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="end_date" class="form-label">End Date</label>
+                                <input type="date" 
+                                       class="form-control" 
+                                       id="end_date"
+                                       name="end_date" 
+                                       value="<?php echo e(request('end_date')); ?>">
+                            </div>
+                        </div>
+
+                        <!-- Quick Date Range Buttons -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label">Quick Date Ranges</label>
+                                <div class="btn-group w-100" role="group">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm quick-date" data-range="this-week">This Week</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm quick-date" data-range="this-month">This Month</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm quick-date" data-range="last-month">Last Month</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm quick-date" data-range="this-year">This Year</button>
                                 </div>
-                                <div class="col-6">
-                                    <a href="<?php echo e(route('trips.index')); ?>" class="btn btn-outline-secondary w-100">
-                                        <i class="bi bi-x-circle"></i> <span class="d-none d-sm-inline">Clear</span>
-                                    </a>
-                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tag Filter -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="tags" class="form-label">Filter by Tags</label>
+                                <select class="form-select" 
+                                        id="tags" 
+                                        name="tags[]" 
+                                        multiple 
+                                        data-placeholder="Select tags to filter by...">
+                                    <?php $__currentLoopData = $userLabels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($label->name); ?>" 
+                                                <?php echo e(in_array($label->name, request('tags', [])) ? 'selected' : ''); ?>
+
+                                                data-color="<?php echo e($label->color); ?>">
+                                            <?php echo e($label->name); ?>
+
+                                        </option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </select>
+                                <small class="form-text text-muted">
+                                    Hold Ctrl/Cmd to select multiple tags
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Filter Actions -->
+                        <div class="row">
+                            <div class="col-6">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-funnel"></i> Apply Filters
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <a href="<?php echo e(route('trips.index')); ?>" class="btn btn-outline-secondary w-100">
+                                    <i class="bi bi-x-circle"></i> Clear All
+                                </a>
                             </div>
                         </div>
                     </form>
@@ -182,5 +253,101 @@
     <?php endif; ?>
 </div>
 <?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Quick date range handlers
+    document.querySelectorAll('.quick-date').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const range = this.dataset.range;
+            const dates = getDateRange(range);
+            
+            document.getElementById('start_date').value = dates.start;
+            document.getElementById('end_date').value = dates.end;
+            
+            // Highlight selected button
+            document.querySelectorAll('.quick-date').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+    
+    // Auto-submit form when filters change (with debounce)
+    let filterTimeout;
+    const autoSubmitElements = ['start_date', 'end_date', 'tags'];
+    
+    autoSubmitElements.forEach(elementId => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.addEventListener('change', function() {
+                clearTimeout(filterTimeout);
+                filterTimeout = setTimeout(() => {
+                    document.getElementById('filters-form').submit();
+                }, 300);
+            });
+        }
+    });
+    
+    // Enhance multi-select tags dropdown
+    const tagsSelect = document.getElementById('tags');
+    if (tagsSelect) {
+        // Add visual indicators for selected tags
+        tagsSelect.addEventListener('change', function() {
+            updateTagsDisplay();
+        });
+        
+        // Initial display update
+        updateTagsDisplay();
+    }
+});
+
+function getDateRange(range) {
+    const now = new Date();
+    let start, end;
+    
+    switch (range) {
+        case 'this-week':
+            const startOfWeek = new Date(now);
+            startOfWeek.setDate(now.getDate() - now.getDay());
+            start = startOfWeek;
+            end = new Date(startOfWeek);
+            end.setDate(startOfWeek.getDate() + 6);
+            break;
+        case 'this-month':
+            start = new Date(now.getFullYear(), now.getMonth(), 1);
+            end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            break;
+        case 'last-month':
+            start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            end = new Date(now.getFullYear(), now.getMonth(), 0);
+            break;
+        case 'this-year':
+            start = new Date(now.getFullYear(), 0, 1);
+            end = new Date(now.getFullYear(), 11, 31);
+            break;
+        default:
+            return { start: '', end: '' };
+    }
+    
+    return {
+        start: start.toISOString().split('T')[0],
+        end: end.toISOString().split('T')[0]
+    };
+}
+
+function updateTagsDisplay() {
+    const tagsSelect = document.getElementById('tags');
+    const selectedOptions = Array.from(tagsSelect.selectedOptions);
+    
+    // Update the label to show selected count
+    const label = document.querySelector('label[for="tags"]');
+    if (selectedOptions.length > 0) {
+        label.innerHTML = `Filter by Tags <span class="badge bg-primary ms-1">${selectedOptions.length}</span>`;
+    } else {
+        label.textContent = 'Filter by Tags';
+    }
+}
+</script>
+<?php $__env->stopPush(); ?>
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /Users/eddie/Development/mileage/resources/views/trips/index.blade.php ENDPATH**/ ?>
