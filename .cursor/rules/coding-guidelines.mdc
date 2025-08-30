@@ -1,0 +1,6 @@
+---
+description: guidance for coding preferences
+globs:
+alwaysApply: true
+---
+Avoid long functions. Attempt to abstract nested logic into their own functions. Follow object-oriented programming principles. Create test cases for all defined requirements and scenarios. Run tests after making any changes to ensure existing functionality is not degraded. Test cases should be named and align to the production code by class name and public methods. 
