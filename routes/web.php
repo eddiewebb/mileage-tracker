@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
 
     // Trip Management
     Route::resource('trips', TripController::class);
+    Route::get('/trips/{trip}/create-next', [TripController::class, 'createFromTrip'])->name('trips.create-from');
 
     // Mileage Rate Management
     Route::get('/mileage-rates', [MileageRateController::class, 'index'])->name('mileage-rates.index');

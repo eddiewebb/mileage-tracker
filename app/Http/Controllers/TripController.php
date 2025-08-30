@@ -74,6 +74,29 @@ class TripController extends Controller
     }
 
     /**
+     * Show the form for creating a new trip based on an existing trip.
+     * Useful for multi-leg journeys where the end location becomes the start.
+     */
+    public function createFromTrip(Trip $trip)
+    {
+        $this->authorizeTrip($trip);
+        
+        $labels = auth()->user()->labels()->orderBy('name')->get();
+        
+        // Pre-populate data for the new trip
+        $tripData = [
+            'start_location' => $trip->end_location,
+            'start_latitude' => $trip->end_latitude,
+            'start_longitude' => $trip->end_longitude,
+            'trip_date' => $trip->trip_date->format('Y-m-d'),
+            'trip_time' => $trip->trip_time->format('H:i'),
+            'selected_labels' => $trip->labels->pluck('name')->toArray(),
+        ];
+        
+        return view('trips.create', compact('labels', 'tripData'));
+    }
+
+    /**
      * Store a newly created trip.
      */
     public function store(Request $request)

@@ -3,8 +3,22 @@
     <!-- Page Header -->
     <div class="row mb-4">
         <div class="col">
-            <h1 class="h3 mb-0">Add New Trip</h1>
-            <p class="text-muted">Track your business mileage</p>
+            <?php if(isset($tripData)): ?>
+                <div class="alert alert-info mb-3">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Creating Next Leg:</strong> Starting from the previous trip's destination with the same date and labels.
+                </div>
+            <?php endif; ?>
+            <h1 class="h3 mb-0">
+                <?php if(isset($tripData)): ?> Continue Journey <?php else: ?> Add New Trip <?php endif; ?>
+            </h1>
+            <p class="text-muted">
+                <?php if(isset($tripData)): ?> 
+                    Add the next leg of your multi-stop journey
+                <?php else: ?> 
+                    Track your business mileage
+                <?php endif; ?>
+            </p>
         </div>
     </div>
 
@@ -45,9 +59,9 @@ endif;
 unset($__errorArgs, $__bag); ?>" 
                                            id="start_location" 
                                            name="start_location" 
-                                           value="<?php echo e(old('start_location')); ?>" 
-                                           placeholder="Enter starting address"
-                                           required>
+                                                                                  value="<?php echo e(old('start_location', $tripData['start_location'] ?? '')); ?>" 
+                                       placeholder="Enter starting address"
+                                       required>
                                     <div class="suggestions-dropdown" id="start-suggestions"></div>
                                 </div>
                                 <?php $__errorArgs = ['start_location'];
@@ -150,7 +164,7 @@ endif;
 unset($__errorArgs, $__bag); ?>" 
                                        id="trip_date" 
                                        name="trip_date" 
-                                       value="<?php echo e(old('trip_date', date('Y-m-d'))); ?>" 
+                                       value="<?php echo e(old('trip_date', $tripData['trip_date'] ?? date('Y-m-d'))); ?>" 
                                        required>
                                 <?php $__errorArgs = ['trip_date'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -176,7 +190,7 @@ endif;
 unset($__errorArgs, $__bag); ?>" 
                                        id="trip_time" 
                                        name="trip_time" 
-                                       value="<?php echo e(old('trip_time', date('H:i'))); ?>" 
+                                       value="<?php echo e(old('trip_time', $tripData['trip_time'] ?? date('H:i'))); ?>" 
                                        required>
                                 <?php $__errorArgs = ['trip_time'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -264,10 +278,10 @@ unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <!-- Hidden coordinate fields -->
-                        <input type="hidden" name="start_latitude" id="start_latitude">
-                        <input type="hidden" name="start_longitude" id="start_longitude">
-                        <input type="hidden" name="end_latitude" id="end_latitude">
-                        <input type="hidden" name="end_longitude" id="end_longitude">
+                        <input type="hidden" name="start_latitude" id="start_latitude" value="<?php echo e(old('start_latitude', $tripData['start_latitude'] ?? '')); ?>">
+                        <input type="hidden" name="start_longitude" id="start_longitude" value="<?php echo e(old('start_longitude', $tripData['start_longitude'] ?? '')); ?>">
+                        <input type="hidden" name="end_latitude" id="end_latitude" value="<?php echo e(old('end_latitude', '')); ?>">
+                        <input type="hidden" name="end_longitude" id="end_longitude" value="<?php echo e(old('end_longitude', '')); ?>">
 
                         <!-- Submit Button -->
                         <div class="row">
@@ -608,6 +622,12 @@ function renderLabels() {
 
 // Initialize everything when page loads
 document.addEventListener('DOMContentLoaded', function() {
+    // Pre-populate labels if this is a "create from existing trip"
+    <?php if(isset($tripData['selected_labels'])): ?>
+        selectedLabels = <?php echo json_encode($tripData['selected_labels'], 15, 512) ?>;
+        renderLabels();
+    <?php endif; ?>
+    
     // Initialize Google Maps if available
     if (typeof google !== 'undefined' && google.maps) {
         initTripMap();

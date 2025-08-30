@@ -5,8 +5,22 @@
     <!-- Page Header -->
     <div class="row mb-4">
         <div class="col">
-            <h1 class="h3 mb-0">Add New Trip</h1>
-            <p class="text-muted">Track your business mileage</p>
+            @isset($tripData)
+                <div class="alert alert-info mb-3">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Creating Next Leg:</strong> Starting from the previous trip's destination with the same date and labels.
+                </div>
+            @endisset
+            <h1 class="h3 mb-0">
+                @isset($tripData) Continue Journey @else Add New Trip @endisset
+            </h1>
+            <p class="text-muted">
+                @isset($tripData) 
+                    Add the next leg of your multi-stop journey
+                @else 
+                    Track your business mileage
+                @endisset
+            </p>
         </div>
     </div>
 
@@ -40,9 +54,9 @@
                                            class="form-control @error('start_location') is-invalid @enderror" 
                                            id="start_location" 
                                            name="start_location" 
-                                           value="{{ old('start_location') }}" 
-                                           placeholder="Enter starting address"
-                                           required>
+                                                                                  value="{{ old('start_location', $tripData['start_location'] ?? '') }}" 
+                                       placeholder="Enter starting address"
+                                       required>
                                     <div class="suggestions-dropdown" id="start-suggestions"></div>
                                 </div>
                                 @error('start_location')
@@ -103,7 +117,7 @@
                                        class="form-control @error('trip_date') is-invalid @enderror" 
                                        id="trip_date" 
                                        name="trip_date" 
-                                       value="{{ old('trip_date', date('Y-m-d')) }}" 
+                                       value="{{ old('trip_date', $tripData['trip_date'] ?? date('Y-m-d')) }}" 
                                        required>
                                 @error('trip_date')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -115,7 +129,7 @@
                                        class="form-control @error('trip_time') is-invalid @enderror" 
                                        id="trip_time" 
                                        name="trip_time" 
-                                       value="{{ old('trip_time', date('H:i')) }}" 
+                                       value="{{ old('trip_time', $tripData['trip_time'] ?? date('H:i')) }}" 
                                        required>
                                 @error('trip_time')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -168,10 +182,10 @@
                         </div>
 
                         <!-- Hidden coordinate fields -->
-                        <input type="hidden" name="start_latitude" id="start_latitude">
-                        <input type="hidden" name="start_longitude" id="start_longitude">
-                        <input type="hidden" name="end_latitude" id="end_latitude">
-                        <input type="hidden" name="end_longitude" id="end_longitude">
+                        <input type="hidden" name="start_latitude" id="start_latitude" value="{{ old('start_latitude', $tripData['start_latitude'] ?? '') }}">
+                        <input type="hidden" name="start_longitude" id="start_longitude" value="{{ old('start_longitude', $tripData['start_longitude'] ?? '') }}">
+                        <input type="hidden" name="end_latitude" id="end_latitude" value="{{ old('end_latitude', '') }}">
+                        <input type="hidden" name="end_longitude" id="end_longitude" value="{{ old('end_longitude', '') }}">
 
                         <!-- Submit Button -->
                         <div class="row">
@@ -512,6 +526,12 @@ function renderLabels() {
 
 // Initialize everything when page loads
 document.addEventListener('DOMContentLoaded', function() {
+    // Pre-populate labels if this is a "create from existing trip"
+    @isset($tripData['selected_labels'])
+        selectedLabels = @json($tripData['selected_labels']);
+        renderLabels();
+    @endisset
+    
     // Initialize Google Maps if available
     if (typeof google !== 'undefined' && google.maps) {
         initTripMap();

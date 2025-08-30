@@ -16,6 +16,9 @@
         </div>
         <div class="col-auto">
             <div class="btn-group" role="group">
+                <a href="{{ route('trips.create-from', $trip) }}" class="btn btn-success" title="Create next leg of journey">
+                    <i class="bi bi-arrow-right-circle"></i> <span class="d-none d-sm-inline">Create Next Leg</span>
+                </a>
                 <a href="{{ route('trips.edit', $trip) }}" class="btn btn-outline-primary">
                     <i class="bi bi-pencil"></i> <span class="d-none d-sm-inline">Edit</span>
                 </a>

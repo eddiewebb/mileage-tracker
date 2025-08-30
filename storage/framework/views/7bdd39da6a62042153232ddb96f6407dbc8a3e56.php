@@ -142,10 +142,13 @@
                                         <li><a class="dropdown-item" href="<?php echo e(route('trips.show', $trip)); ?>">
                                             <i class="bi bi-eye"></i> View
                                         </a></li>
+                                        <li><a class="dropdown-item text-success" href="<?php echo e(route('trips.create-from', $trip)); ?>">
+                                            <i class="bi bi-arrow-right-circle"></i> Create Next Leg
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item" href="<?php echo e(route('trips.edit', $trip)); ?>">
                                             <i class="bi bi-pencil"></i> Edit
                                         </a></li>
-                                        <li><hr class="dropdown-divider"></li>
                                         <li>
                                             <form method="POST" action="<?php echo e(route('trips.destroy', $trip)); ?>" onsubmit="return confirm('Are you sure?')">
                                                 <?php echo csrf_field(); ?>
