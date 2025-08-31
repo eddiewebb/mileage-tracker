@@ -93,8 +93,10 @@
             right: 0;
             background: white;
             border-top: 1px solid #dee2e6;
-            padding: 0.5rem 0;
+            padding: 0.75rem 0; /* Slightly increased padding */
             z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1); /* Add shadow for better separation */
+            min-height: 70px; /* Ensure consistent height */
         }
 
         .mobile-nav .nav-link {
@@ -116,12 +118,47 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding-bottom: 100px; /* Space for mobile nav - increased for better clearance */
+            }
+            
             .container-fluid {
-                padding-bottom: 80px; /* Space for mobile nav */
+                padding-bottom: 20px; /* Additional space within container */
             }
             
             .desktop-nav {
                 display: none;
+            }
+            
+            /* Ensure all content areas have proper bottom spacing */
+            main, .main-content, .content-wrapper {
+                margin-bottom: 20px;
+            }
+            
+            /* Extra space for forms and long content */
+            .card:last-child,
+            .row:last-child .card,
+            form:last-child {
+                margin-bottom: 30px;
+            }
+            
+            /* Ensure submit buttons and actions aren't hidden */
+            .btn-group:last-child,
+            .form-group:last-child,
+            .mb-3:last-child {
+                margin-bottom: 25px !important;
+            }
+            
+            /* Special handling for trip forms with maps */
+            #map-container,
+            .map-wrapper {
+                margin-bottom: 25px;
+            }
+            
+            /* Pagination and footer elements */
+            .pagination-wrapper,
+            .d-flex.justify-content-between:last-child {
+                margin-bottom: 30px;
             }
         }
 
