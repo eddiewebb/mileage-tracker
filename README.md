@@ -2,6 +2,8 @@
 
 A responsive web application for tracking business miles according to IRS regulations, built with Laravel PHP framework.
 
+![screenshot](docs/assets/continue_desktop.png)
+
 ## Features
 
 - **User Authentication**: Secure account creation and login system
