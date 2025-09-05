@@ -340,6 +340,26 @@ function setupAutocomplete() {
     });
 }
 
+// Function to update autocomplete with location bias when user location is available
+function updateAutocompleteLocationBias() {
+    if (userLocation && startAutocomplete && endAutocomplete) {
+        // Create a circular bias around user's location (approximately 50km radius)
+        const circle = new google.maps.Circle({
+            center: userLocation,
+            radius: 50000 // 50km in meters
+        });
+        
+        // Set bounds for location bias
+        const bounds = circle.getBounds();
+        
+        // Update both autocomplete instances with location bias
+        startAutocomplete.setBounds(bounds);
+        endAutocomplete.setBounds(bounds);
+        
+        console.log('Autocomplete location bias enabled for:', userLocation);
+    }
+}
+
 function setupEventListeners() {
     document.getElementById('calculate-route').addEventListener('click', calculateRoute);
     
