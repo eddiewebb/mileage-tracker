@@ -277,7 +277,7 @@ function initTripMapAndAutocomplete() {
 function setupAutocomplete() {
     // Use the current Places API (not deprecated)
     const autocompleteOptions = {
-        types: ['address'],
+        types: [],
         componentRestrictions: { country: 'us' },
         fields: ['place_id', 'formatted_address', 'geometry.location', 'name']
     };
