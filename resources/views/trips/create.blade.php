@@ -242,6 +242,9 @@ let map, directionsService, directionsRenderer;
 let startAutocomplete, endAutocomplete;
 let startMarker, endMarker;
 
+// Global variable to store user's location for autocomplete biasing
+let userLocation = null;
+
 // Initialize map and autocomplete
 function initTripMapAndAutocomplete() {
     map = new google.maps.Map(document.getElementById('map'), {
@@ -256,7 +259,7 @@ function initTripMapAndAutocomplete() {
     });
     directionsRenderer.setMap(map);
 
-    // Set up autocomplete
+    // Set up autocomplete (initial setup without location bias)
     setupAutocomplete();
     
     // Set up event listeners
@@ -269,7 +272,19 @@ function initTripMapAndAutocomplete() {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude
             };
+            
+            // Store user location globally
+            userLocation = pos;
+            
+            // Center map on user location
             map.setCenter(pos);
+            
+            // Update autocomplete with location bias
+            updateAutocompleteLocationBias();
+            
+        }, function(error) {
+            console.log('Geolocation error:', error.message);
+            // Fallback: continue without location bias
         });
     }
 }

@@ -260,6 +260,26 @@ function initMap() {
     
     // Initialize labels with existing data
     initializeExistingLabels();
+    
+    // Try to get user's current location for autocomplete bias
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            
+            // Store user location globally
+            userLocation = pos;
+            
+            // Update autocomplete with location bias
+            updateAutocompleteLocationBias();
+            
+        }, function(error) {
+            console.log('Geolocation error:', error.message);
+            // Fallback: continue without location bias
+        });
+    }
 }
 
 function loadExistingRoute() {
@@ -280,6 +300,9 @@ function initializeExistingLabels() {
 
 // ... (rest of the JavaScript from create.blade.php with modifications for edit)
 let selectedLabels = [];
+
+// Global variable to store user's location for autocomplete biasing
+let userLocation = null;
 
 // Copy all the JavaScript functions from create.blade.php here
 function setupAutocomplete() {
@@ -321,6 +344,26 @@ function setupAutocomplete() {
             checkAndAutoCalculateRoute();
         }
     });
+}
+
+// Function to update autocomplete with location bias when user location is available
+function updateAutocompleteLocationBias() {
+    if (userLocation && startAutocomplete && endAutocomplete) {
+        // Create a circular bias around user's location (approximately 50km radius)
+        const circle = new google.maps.Circle({
+            center: userLocation,
+            radius: 50000 // 50km in meters
+        });
+        
+        // Set bounds for location bias
+        const bounds = circle.getBounds();
+        
+        // Update both autocomplete instances with location bias
+        startAutocomplete.setBounds(bounds);
+        endAutocomplete.setBounds(bounds);
+        
+        console.log('Autocomplete location bias enabled for:', userLocation);
+    }
 }
 
 function setupEventListeners() {
