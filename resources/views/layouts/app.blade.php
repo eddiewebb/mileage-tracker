@@ -7,6 +7,12 @@
 
     <title>{{ config('app.name', 'Mileage Tracker') }}</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="alternate icon" href="{{ asset('favicon.svg') }}">
+    <link rel="mask-icon" href="{{ asset('favicon.svg') }}" color="#2c3e50">
+    <meta name="theme-color" content="#2c3e50">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
