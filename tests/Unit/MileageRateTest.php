@@ -25,6 +25,21 @@ class MileageRateTest extends TestCase
         $this->assertEquals(2024, $rate->year);
         $this->assertEquals(67, $rate->rate_cents_per_mile); // 2024 default
     }
+        
+    /**
+     * Test mileage rate creation for user and year.
+     */
+    public function test_decimal_mileage_rate_creation_for_user_and_year()
+    {
+        $user = User::factory()->create();
+        
+        $rate = MileageRate::getOrCreateForUserAndYear($user->id, 2026);
+
+        $this->assertInstanceOf(MileageRate::class, $rate);
+        $this->assertEquals($user->id, $rate->user_id);
+        $this->assertEquals(2026, $rate->year);
+        $this->assertEquals(72.5, $rate->rate_cents_per_mile); // 2026 default
+    }
 
     /**
      * Test existing rate is returned for user and year.

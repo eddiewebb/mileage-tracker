@@ -19,6 +19,27 @@ class MileageRateTest extends TestCase
         $this->user = User::factory()->create();
     }
 
+
+    /**
+     * Test mileage rate can be updated for specific year.
+     */
+    public function test_mileage_rate_with_decimal_can_be_updated_for_specific_year()
+    {
+        $response = $this->actingAs($this->user)->post('/mileage-rates', [
+            'year' => 2026,
+            'rate_cents_per_mile' => 72.5,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('mileage_rates', [
+            'user_id' => $this->user->id,
+            'year' => 2024,
+            'rate_cents_per_mile' => 70,
+        ]);
+    }
+
     /**
      * Test mileage rate can be updated for specific year.
      */

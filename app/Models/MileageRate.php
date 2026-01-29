@@ -17,7 +17,7 @@ class MileageRate extends Model
 
     protected $casts = [
         'year' => 'integer',
-        'rate_cents_per_mile' => 'integer',
+        'rate_cents_per_mile' => 'float',
     ];
 
     /**
@@ -66,11 +66,12 @@ class MileageRate extends Model
     {
         // IRS rates by year (in cents per mile)
         $irsRates = [
+            2026 => 72.5,
             2024 => 67,
-            2023 => 66, // Rounded for integer storage
-            2022 => 63, // Rounded for integer storage  
+            2023 => 66, // Rounded for storage
+            2022 => 63, // Rounded for storage
             2021 => 56,
-            2020 => 58, // Rounded for integer storage
+            2020 => 58, // Rounded for storage
             2019 => 58,
         ];
 
