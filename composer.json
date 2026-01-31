@@ -6,11 +6,11 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
-        "laravel/framework": "^9.19",
-        "laravel/sanctum": "^2.14",
-        "laravel/tinker": "^2.7",
-        "dompdf/dompdf": "^2.0",
-        "league/csv": "^9.8"
+        "dompdf/dompdf": "*",
+        "laravel/framework": "^10.50",
+        "laravel/sanctum": "*",
+        "laravel/tinker": "*",
+        "league/csv": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -19,7 +19,7 @@
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^6.0",
         "phpunit/phpunit": "^9.5.10",
-        "spatie/laravel-ignition": "^1.0"
+        "spatie/laravel-ignition": "*"
     },
     "autoload": {
         "psr-4": {
