@@ -20,9 +20,15 @@ return [
 
     'connections' => [
 
+        'inmemory' => [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+        ],
+
         'sqlite' => [
             'driver' => 'sqlite',
-            'url' => env('DATABASE_URL'),
             'database' => env('DB_DATABASE') ? (str_starts_with(env('DB_DATABASE'), '/') ? env('DB_DATABASE') : database_path(env('DB_DATABASE'))) : database_path('database.sqlite'),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),

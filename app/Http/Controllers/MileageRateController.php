@@ -70,7 +70,7 @@ class MileageRateController extends Controller
     {
         $request->validate([
             'year' => ['required', 'integer', 'min:2000', 'max:' . (Carbon::now()->year + 10)],
-            'rate_cents_per_mile' => ['required', 'integer', 'min:1', 'max:10000'],
+            'rate_cents_per_mile' => ['required', 'numeric', 'min:0.01', 'max:10000'],
         ]);
     }
 
@@ -85,7 +85,7 @@ class MileageRateController extends Controller
                 'year' => $request->year,
             ],
             [
-                'rate_cents_per_mile' => $request->rate_cents_per_mile,
+                'rate_cents_per_mile' => (float) $request->rate_cents_per_mile,
             ]
         );
     }

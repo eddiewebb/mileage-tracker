@@ -181,7 +181,8 @@ class TripTest extends TestCase
         $response = $this->actingAs($this->user)->get('/trips');
 
         $response->assertStatus(200);
-        $response->assertSee($userTrip->start_location);
-        $response->assertDontSee($otherTrip->start_location);
+        //HTML repsosne truincates address, so use less than 25
+        $response->assertSee(substr($userTrip->start_location, 0, 25));
+        $response->assertDontSee(substr($otherTrip->start_location, 0, 20));
     }
 }
