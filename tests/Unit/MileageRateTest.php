@@ -14,7 +14,7 @@ class MileageRateTest extends TestCase
     /**
      * Test mileage rate creation for user and year.
      */
-    public function test_mileage_rate_creation_for_user_and_year()
+    public function test_mileage_rate_creation_with_2024_irs_default_for_user_and_year()
     {
         $user = User::factory()->create();
         

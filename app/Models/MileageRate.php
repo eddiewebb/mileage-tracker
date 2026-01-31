@@ -67,6 +67,7 @@ class MileageRate extends Model
         // IRS rates by year (in cents per mile)
         $irsRates = [
             2026 => 72.5,
+            2025 => 70,
             2024 => 67,
             2023 => 66, // Rounded for storage
             2022 => 63, // Rounded for storage

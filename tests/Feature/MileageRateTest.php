@@ -35,8 +35,8 @@ class MileageRateTest extends TestCase
 
         $this->assertDatabaseHas('mileage_rates', [
             'user_id' => $this->user->id,
-            'year' => 2024,
-            'rate_cents_per_mile' => 70,
+            'year' => 2026,
+            'rate_cents_per_mile' => 72.5,
         ]);
     }
 
@@ -70,8 +70,8 @@ class MileageRateTest extends TestCase
             'rate_cents_per_mile' => 70,
         ]);
 
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors('year');
+        $response->assertStatus(302);
+        $response->assertSessionHasErrors('year');
     }
 
     /**
@@ -84,8 +84,8 @@ class MileageRateTest extends TestCase
             'rate_cents_per_mile' => 0, // Invalid rate
         ]);
 
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors('rate_cents_per_mile');
+        $response->assertStatus(302);
+        $response->assertSessionHasErrors('rate_cents_per_mile');
     }
 
     /**
